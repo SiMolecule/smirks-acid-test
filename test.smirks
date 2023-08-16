@@ -1,0 +1,285 @@
+# Copyright (C) 2022-2023 NextMove Software
+# Author: John Mayfield
+#
+# Testing the limits, quirks and corner cases of
+# SMIRKS implementations. This provides a SMILES and 
+# SMIRKS to apply to it, tab separated line, one per line:
+# 	SMILES\tSMIRKS\tCOMMENT
+#
+# Comments and blank lines should be echoed, otherwise 
+# you should run the SMIRKS against the SMILES (exclusive 
+# match or once) and add an output column
+#
+# 	SMILES\tSMIRKS\tOUTPUT\tCOMMENT
+#
+# If the SMILES is invalid, output "<bad smiles>"
+# If the SMIRKS is invalid, output "<bad smirks>"
+# If the SMIRKS did not apply, output "<no match>"
+
+# Invalid SMIRKS
+C	?>>?	check error handling
+?	[*:1]>[*:2]	check error handling
+C	[O:1]>>[O:1]	check no match
+
+# Atom Changes (hydrogen count/valence)
+C	[C:1]>>[C:1]	No-op?
+C	[C:1]>>[*:1]	No-op?
+C	[C:1]>>[CH0:1]
+C	[C:1]>>[CH1:1]
+C	[C:1]>>[CH2:1]
+C	[C:1]>>[CH3:1]
+C	[C:1]>>[CH4:1]
+C	[C:1]>>[CH5:1]	Texas Carbon
+C	[CH4:1]>>[C:1]	No-op?
+C	[CH4:1]>>[*:1]	No-op?
+C	[CH4:1]>>[CH0:1]
+C	[CH4:1]>>[CH1:1]
+C	[CH4:1]>>[CH2:1]
+C	[CH4:1]>>[CH3:1]
+C	[CH4:1]>>[CH4:1]
+C	[CH4:1]>>[CH5:1]	Texas Carbon
+C	[C:1]>>[#6H0:1]
+C	[C:1]>>[#6H1:1]
+C	[C:1]>>[#6H2:1]
+C	[C:1]>>[#6H3:1]
+C	[C:1]>>[#6H4:1]
+C	[C:1]>>[#6H5:1]	Texas Carbon
+C	[C:1]>>[Ch0:1]
+C	[C:1]>>[Ch1:1]
+C	[C:1]>>[Ch2:1]
+C	[C:1]>>[Ch3:1]
+C	[C:1]>>[Ch4:1]
+C	[C:1]>>[Ch5:1]	Texas Carbon
+C	[C:1]>>[*H0:1]
+C	[C:1]>>[*H1:1]
+C	[C:1]>>[*H2:1]
+C	[C:1]>>[*H3:1]
+C	[C:1]>>[*H4:1]
+C	[C:1]>>[H0:1]
+C	[C:1]>>[H1:1]
+C	[C:1]>>[H2:1]
+C	[C:1]>>[H3:1]
+C	[C:1]>>[H4:1]
+C	[C:1]>>[H1,H2:1]	Conflicting
+C	[C:1]>>[H1,h2:1]	Conflicting
+C	[C:1]>>[H2,h2:1]
+
+C	[C,N:1]>>[*H2:1]
+N	[C,N:1]>>[*H2:1]
+C	[C,N:1]>>[H2:1]
+N	[C,N:1]>>[H2:1]
+C	[C,N:1]>>[C,N;H2:1]
+N	[C,N:1]>>[C,N;H2:1]
+C	[C,N:1]>>[CH2,NH2:1]
+N	[C,N:1]>>[CH2,NH2:1]
+C	[C,N:1]>>[CH3,NH2:1]	Conflicting
+N	[C,N:1]>>[CH3,NH2:1]	Conflicting
+C	[C,N:1]>>[C,NH2:1]	Conflicting
+N	[C,N:1]>>[C,NH2:1]	Conflicting
+
+
+[O-]C	[O-:1]>>[OH1+0:1]
+[O-]C	[O-:1]>>[O:1]
+[O-]C	[O-:1]>>[O:1][H]
+[O-]C	[O-:1]>>[O+0:1][H]
+[O-]C	[O-:1]>>[OH0+0:1][H]
+
+# Atom Change (charge)
+C	[C:1]>>[C+:1]
+C	[C:1]>>[CH2+:1]
+[CH2+]	[C:1]>>[C:1]	no-op?
+[CH2+]	[C:1]>>[*:1]	no-op?
+[CH2+]	[C+:1]>>[C:1]
+[CH2+]	[C+:1]>>[C+:1]
+[CH2+]	[C:1]>>[C+:1]
+[CH2+]	[C:1]>>[C;+,-:1]	Conflicting
+C	[C,N:1]>>[*+:1]
+N	[C,N:1]>>[*+:1]
+C	[C,N:1]>>[+:1]
+N	[C,N:1]>>[+:1]
+C	[C,N:1]>>[C,N;+:1]
+N	[C,N:1]>>[C,N;+:1]
+C	[C,N:1]>>[C+,N+:1]
+N	[C,N:1]>>[C+,N+:1]
+C	[C,N:1]>>[C-,N+:1]
+N	[C,N:1]>>[C-,N+:1]
+C	[C,N:1]>>[C,N+:1]
+N	[C,N:1]>>[C,N+:1]
+
+# Atom Change (mass)
+[13C]	[C:1]>>[C:1]
+[13C]	[C:1]>>[*:1]
+C	[C:1]>>[12C:1]
+C	[C:1]>>[13C:1]
+[13C]	[C:1]>>[13C:1]
+[13C]	[C:1]>>[0C:1]
+[13C]	[13C:1]>>[C:1]
+[12C]	[12,13;C:1]>>[C:1]
+[13C]	[12,13;C:1]>>[C:1]
+[12C]	[12,13;C:1]>>[13C:1]
+[13C]	[12,13;C:1]>>[13C:1]
+[12C]	[12,13;C:1]>>[0C:1]
+[13C]	[12,13;C:1]>>[0C:1]
+
+# Atom Change (element)
+[Pb]	[Pb:1]>>[Au:1]	Transmutation
+[Pb]	[Pb,Au:1]>>[Au:1]	Transmutation
+C 	[C:1]>>[#6:1]
+C 	[C:1]>>[#7:1]	Transmutation
+C 	[C:1]>>[#0:1]	Create an explicit wild-card?
+C(=O)N 	[O:2].[N:3]>>[O:3].[N:2]	"Mayfield shuffle"
+C(=O)N 	([O:2].[N:3])>>[O:3].[N:2]	"Mayfield shuffle" for RDKit
+C(=O)N 	([O:2].[N:3])>>([O:3].[N:2])	"Mayfield shuffle" for RDKit2
+C(=O)N 	([O:2].[N:3])>>([O:3]).([N:2])	"Mayfield shuffle" error?
+
+# Atom Change (aromaticity)
+c1ccccc1	[c:1]>>[c:1]
+c1ccccc1	[c:1]>>[*:1]
+c1ccccc1	[c:1]>>[C:1]	Dubious
+C1CCCCC1	[C:1]>>[c:1]	Dubious
+c1ccccc1	[c:1][c:2][c:3]>>[CH:1]-[CH2:2]-[CH:3]
+c1ccccc1	[c:1][c:2][c:3]>>[CH1:1]-[CH2:2]-[CH1:3]
+c1ccccc1	[c:1][c:2][c:3]>>[C:1](-[H])-[C:2](-[H])(-[H])-[C:3]-[H]
+
+# Adding Atoms
+C	[CH4:1]>>[CH3:1]-O
+C	[CH4:1]>>[CH3:1]-[O]
+C	[CH4:1]>>[CH3:1]-[O:2]
+C	[CH4:1]>>[CH3:1]-[O-]
+C	[CH4:1]>>[CH3:1]-[OH0-]
+C	[CH4:1]>>[CH3:1]-[OH0]
+C	[CH4:1]>>[CH3:1]-[OH]
+C	[CH4:1]>>[CH3:1]-[OH1]
+C	[CH4:1]>>[CH3:1]-[OH2]
+C	[CH4:1]>>[CH3:1]-[O]-[H]
+C	[C:1]>>[C:1][H]
+C	[C:1]>>[C:1]([H])[H]
+C	[C:1]>>[C:1]([H])([H])[H]
+C	[C:1]>>[C:1]([H])([H])([H])[H]
+C	[C:1]>>[C:1]([H])([H])([H])([H])[H]	Texas Carbon
+
+# Removing Atoms
+OC	O[CH3:1]>>[CH4:1]
+OC	O[CH3:1]>>[*:1]
+OC	O[C:1]>>[C:1]-[H]
+CCCOC	O[C:1]>>[C:1]-[H]
+COCCC	O[C:1]>>[C:1]-[H]
+C	[C:1][H]>>O[C:1]
+C	[C:1][H]>>O[CH3:1]
+OC	O[C:1]>>[CH3:1]-[H]
+C	C>>O
+
+# Bond Changes
+CC	[*H3:1]-[*H3:2]>>[*H2:1]=[*H2:2]
+CC	[*H3:1]-[*H3:2]>>[*H1:1]#[*H1:2]
+CC	[*:1]-[*:2]>>[*:1]=[*:2]
+CCC	[*H3:1]-[*H2:2]>>[*H2:1]=[*H1:2]
+CCC	[*:1]-[*:2]>>[*:1]=[*:2]
+CCCCC	[*H2:1]-[*H2:2]>>[*H1:1]=[*H1:2]
+CCCCC	[*:1]-[*:2]>>[*:1]=[*:2]
+
+CCC	[*:1]-[*:2]>>[*:1]-,=[*:2]	Conflicting, should be SMIRKS error or not change
+CCC	[*:1]-[*:2]>>[*:1]=,=[*:2]	Conflicting, should be SMIRKS error or not change
+
+# todo @ !@ etc on right hand side
+
+# Bond Changes (aromaticity)
+CCC	[*H2:1]-[*H2:2]-[*H2:3]>>[*H1:1]:[*H1:2]:[*H1:3]	Should not match [CH2]!
+CCC	[*H3:1]-[*H2:2]-[*H3:3]>>[cH1:1]:[cH1:2]:[cH1:3]
+CCC	[*:1]-[*:2]-[*:3]>>[a:1]:[a:2]:[a:3]
+
+# Adding Bonds
+C	[CH4:1]>>[CH3:1]c1ccccc1
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]=[CH:2]
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]:[CH:2]
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]=[CH:2]
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]:[CH:2]
+C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]-[CH:2]
+C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]-[CH:2]
+C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]:[CH:2]
+C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]:[CH:2]
+
+# Input ordering (Exclusive/non-overlapping matches)
+C1CCC(N)C(N)C1	N[C:1][C:2]>>O[C:1][C:2]
+NC1C(N)CCCC1	N[C:1][C:2]>>O[C:1][C:2]
+NC1CCCCC1N	N[C:1][C:2]>>O[C:1][C:2]
+C1CCC(N)C(N)C1	N[C:1][C:2][C:3]>>O[C:1][C:2][C:3]
+NC1C(N)CCCC1	N[C:1][C:2][C:3]>>O[C:1][C:2][C:3]
+NC1CCCCC1N	N[C:1][C:2][C:3]>>O[C:1][C:2][C:3]
+
+C1CCC(N)C(N)C1	N[C:1][C:2]>>O[CH0:1]=[CH:2]	under-specified query, can overlap
+NC1C(N)CCCC1	N[C:1][C:2]>>O[CH0:1]=[CH:2]	under-specified query, can overlap
+NC1CCCCC1N	N[C:1][C:2]>>O[CH0:1]=[CH:2]	under-specified query, can overlap
+C1CCC(N)C(N)C1	N[CH:1][CH2:2]>>O[CH0:1]=[CH:2]
+NC1C(N)CCCC1	N[CH:1][CH2:2]>>O[CH0:1]=[CH:2]
+NC1CCCCC1N	N[CH:1][CH2:2]>>O[CH0:1]=[CH:2]
+
+# Adding bond to existing atoms?
+CC	[*:1].[*:2]>>[*:1]-[*:2]
+CC	[*:1].[*:2]>>[*:1]=[*:2]
+CCC	[*:1].[*:2]>>[*:1]-[*:2]
+
+# For RDKit - wants the brackets to enforce self matches
+CC	([*:1].[*:2])>>[*:1]-[*:2]
+CC	([*:1].[*:2])>>[*:1]=[*:2]
+CCC	([*:1].[*:2])>>[*:1]-[*:2]
+
+C=C	[CH2:1].[CH2:2]>>[CH1:1]CCCC[CH1:2]	New bonds should be single
+C=C	[CH2:1].[CH2:2]>>[cH1:1]cccc[cH1:2]	New bonds should be aromatic
+CC	[CH3:1].[CH3:2]>>[CH2:1]CCCC[CH2:2]	New bonds should be single
+CC	[CH3:1].[CH3:2]>>[cH1:1]cccc[cH1:2]	New bonds should be aromatic
+
+# For RDKit
+CC	([CH3:1].[CH3:2])>>[cH1:1]cccc[cH1:2]
+CC	([CH3:1].[CH3:2])>>[CH2:1]CCCC[CH2:2]
+C=C	([CH2:1].[CH2:2])>>[CH1:1]CCCC[CH1:2]
+C=C	([CH2:1].[CH2:2])>>[cH1:1]cccc[cH1:2]
+
+CC	[CH3:1].[CH3:2]>>[CH1:1]=CCCC=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	[CH3:1].[CH3:2]>>[CH1:1]=CCCC=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	[CH3:1].[CH3:2]>>[CH1:1]=,:CCCC=,:[CH1:2]	Conflicting, new bonds should be double if anything
+CC	[CH3:1].[CH3:2]>>[CH1:1]:,=CCCC:,=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	[CH3:1].[CH3:2]>>[cH1:1]=,:cccc=,:[cH1:2]	Conflicting, new bonds should be aromatic if anything
+CC	[CH3:1].[CH3:2]>>[cH1:1]:,=cccc:,=[cH1:2]	Conflicting, new bonds should be aromatic if anything
+
+# for RDKit
+CC	([CH3:1].[CH3:2])>>[CH1:1]=CCCC=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	([CH3:1].[CH3:2])>>[CH1:1]=CCCC=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	([CH3:1].[CH3:2])>>[CH1:1]=,:CCCC=,:[CH1:2]	Conflicting, new bonds should be double if anything
+CC	([CH3:1].[CH3:2])>>[CH1:1]:,=CCCC:,=[CH1:2]	Conflicting, new bonds should be double if anything
+CC	([CH3:1].[CH3:2])>>[cH1:1]=,:cccc=,:[cH1:2]	Conflicting, new bonds should be aromatic if anything
+CC	([CH3:1].[CH3:2])>>[cH1:1]:,=cccc:,=[cH1:2]	Conflicting, new bonds should be aromatic if anything
+
+# Removing Bonds
+C=CC=CC=C	[CH:1]=[CH:2]>>[CH3:1].[CH3:2]
+C=CC=CC=C	[CH:1]=[CH:2]>>([CH3:1]).([CH3:2])
+C=CC=CC=C	[CH:1]=[CH:2]>>[C:1]([H])[H].[C:2]([H])[H]
+C=CC=CC=C	[CH:1]=[CH:2]>>[C:1]([H])([H])[H].[C:2]([H])([H])[H]
+C=CC=CC=C	[C:1]=[C:2]>>[C:1]([H])[H].[C:2]([H])[H]
+
+# Stereochemistry
+C[C@H](N)O	[*:1][*@:2]([*:3])[*:4]>>[*:1][*@@:2]([*:3])[*:4]	Invert stereochemistry (3 nbors)
+C[C@H](N)O	[*:1][*@:2]([*:3])[*:4]>>[*:1][*@:2]([*:4])[*:3]	Invert stereochemistry (3 nbors)
+C[C@](Cl)(N)O	[*:1][*@:2]([*:3])([*:4])[*:5]>>[*:1][*@@:2]([*:3])([*:4])[*:5]	Invert stereochemistry (4 nbors)
+C[C@](Cl)(N)O	[*:1][*@:2]([*:3])([*:4])[*:5]>>[*:1][*@:2]([*:3])([*:5])[*:4]	Invert stereochemistry (4 nbors)
+
+C[C@H](N)O	[C:1][C@:2]([N:3])[O:4]>>[C:1][C@@:2]([N:3])[O:4]	Invert stereochemistry (3 nbors)
+C[C@H](N)O	[C:1][C@:2]([N:3])[O:4]>>[C:1][C@:2]([O:4])[N:3]	Invert stereochemistry (3 nbors)
+C[C@H](N)O	[C:1][C@:2]([N:3])[O:4]>>[C:1][C@@:2]([N:4])[O:3]	Invert stereochemistry (3 nbors), Mistake but OEChem oddity
+C[C@](Cl)(N)O	[C:1][C@:2]([Cl:3])([N:4])[O:5]>>[C:1][C@@:2]([Cl:3])([N:4])[O:5]	Invert stereochemistry (4 nbors)
+C[C@](Cl)(N)O	[C:1][C@:2]([Cl:3])([N:4])[O:5]>>[C:1][C@@:2]([Cl:3])([O:5])[N:4]	Invert stereochemistry (4 nbors)
+
+C/C=C/C	[C:1]/[C:2]=[C:3]/[C:4]>>[C:1]/[C:2]=[C:3]\[C:4] Invert DB
+C/C=C\C	[C:1]/[C:2]=[C:3]\[C:4]>>[C:1]/[C:2]=[C:3]/[C:4] Invert DB
+
+C[C@](N)(O)CC	[C:1]O>>[C:1]Cl	Keep stereo intact
+C[C@H](N)O	[C:1]O>>[C:1]Cl	Keep stereo intact?
+C[C@H](N)O	[C:1](O)N>>[C:1](Cl)Br	Stereo should be lost
+C/C=C(/C)Br	[C:1]Br>>[C:1]Cl	Keep stereo intact
+C/C=C(/Br)C	[C:1]Br>>[C:1]Cl	Keep stereo intact
+C/C=C(/Cl)Br	[C:1](Br)Cl>>[C:1](N)O	Stereo should be lost
+
+# Stereo (advanced)
+N[C@H](C)O	[*@:1]>>[*:1]
+N[C@H](C)O	[*@:1]>>[*!@!@@:1]	Remove stereo?
+NC(C)O	[N:1][C:2]([C:3])[O:4]>>[N:1][C@:2]([C:3])[O:4]	Add stereo
