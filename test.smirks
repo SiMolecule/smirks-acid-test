@@ -18,8 +18,11 @@
 
 # Invalid SMIRKS
 C	?>>?	check error handling
-?	[*:1]>[*:2]	check error handling
+C	[*:1]>[*:2]	check error handling
+?	[*:1]>>[*:2]	check error handling
 C	[O:1]>>[O:1]	check no match
+CC	[C:1]>>[C:1][C:1]	duplicate product map
+CC	[C:1][C:1]>>[C:1]	duplicate reactant map
 
 # Atom Changes (hydrogen count/valence)
 C	[C:1]>>[C:1]	No-op?
@@ -84,6 +87,18 @@ N	[C,N:1]>>[C,NH2:1]	Conflicting
 [H]C	[C:1]>>[CH3:1]
 [H]C	[C:1]>>[CH4:1]
 [H]C	[C:1]>>[CH5:1]	Texas Carbon
+[2H]C	[C:1]>>[CH0:1]
+[2H]C	[C:1]>>[CH1:1]
+[2H]C	[C:1]>>[CH2:1]
+[2H]C	[C:1]>>[CH3:1]
+[2H]C	[C:1]>>[CH4:1]
+[2H]C	[C:1]>>[CH5:1]	Texas Carbon
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH0:1]	Bridged hydrogen	
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH1:1]	Bridged hydrogen	
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH2:1]	Bridged hydrogen	
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH3:1]	Bridged hydrogen	
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH4:1]	Bridged hydrogen	
+[H]B1[H]B([H]1)[H]	[B:1]>>[BH5:1]	Bridged hydrogen
 [H]C	[C:1]>>[Ch0:1]
 [H]C	[C:1]>>[Ch1:1]
 [H]C	[C:1]>>[Ch2:1]
@@ -99,7 +114,29 @@ N	[C,N:1]>>[C,NH2:1]	Conflicting
 
 # Atom Change (charge)
 C	[C:1]>>[C+:1]
-C	[C:1]>>[CH2+:1]
+C	[C:1]>>[C-:1]
+[CH5]	[C:1]>>[C+:1]
+[CH5]	[C:1]>>[C-:1]
+[NH3]	[N:1]>>[N+:1]
+[NH3]	[N:1]>>[N-:1]
+[SH2]	[S:1]>>[S+:1]
+[SH2]	[S:1]>>[S-:1]
+[SH4]	[S:1]>>[S+:1]
+[SH4]	[S:1]>>[S-:1]
+S	[S:1]>>[S+:1]
+S	[S:1]>>[S-:1]
+[H]S	[S:1]>>[S+:1]
+[H]S	[S:1]>>[S-:1]
+[H]S[H]	[S:1]>>[S+:1]
+[H]S[H]	[S:1]>>[S-:1]
+[H][S][H]	[S:1]>>[S+:1]
+[H][S][H]	[S:1]>>[S-:1]
+[H]S([H])([H])[H]	[S:1]>>[S+:1]
+[H]S([H])([H])[H]	[S:1]>>[S-:1]
+[H][S]([H])([H])[H]	[S:1]>>[S+:1]
+[H][S]([H])([H])[H]	[S:1]>>[S-:1]
+C	[C:1]>>[CH3+:1]
+C	[C:1]>>[CH3-:1]
 [CH2+]	[C:1]>>[C:1]	no-op?
 [CH2+]	[C:1]>>[*:1]	no-op?
 [CH2+]	[C+:1]>>[C:1]
@@ -127,6 +164,7 @@ C	[C:1]>>[13C:1]
 [13C]	[C:1]>>[13C:1]
 [13C]	[C:1]>>[0C:1]
 [13C]	[13C:1]>>[C:1]
+[13C]	[13C:1]>>[13C:1]
 [12C]	[12,13;C:1]>>[C:1]
 [13C]	[12,13;C:1]>>[C:1]
 [12C]	[12,13;C:1]>>[13C:1]
@@ -137,6 +175,7 @@ C	[C:1]>>[13C:1]
 # Atom Change (element)
 [Pb]	[Pb]>>[Au]	Transmutation (Daylight)
 [Pb]	[Pb:1]>>[Au:1]	Transmutation
+[Pb]	[Pb:1]>>[Au:1][Au]	Transmutation, Add Neighbor
 [Pb]	[Pb,Au:1]>>[Au:1]	Transmutation
 [Au]	[Pb,Au:1]>>[Au:1]	Transmutation (no-op)
 C 	[C:1]>>[#6:1]
@@ -150,8 +189,8 @@ C(=O)N 	([O:2].[N:3])>>([O:3]).([N:2])	"Mayfield shuffle" error?
 # Atom Change (aromaticity)
 c1ccccc1	[c:1]>>[c:1]
 c1ccccc1	[c:1]>>[*:1]
-c1ccccc1	[c:1]>>[C:1]	Dubious (make all carbons aliphatic)
-C1CCCCC1	[C:1]>>[c:1]	Dubious (make all carbons aromatic)
+c1ccccc1	[c:1]>>[C:1]	Dubious
+C1CCCCC1	[C:1]>>[c:1]	Dubious
 c1ccccc1	[c:1][c:2][c:3]>>[CH:1]-[CH2:2]-[CH:3]
 c1ccccc1	[c:1][c:2][c:3]>>[CH1:1]-[CH2:2]-[CH1:3]
 c1ccccc1	[c:1][c:2][c:3]>>[C:1](-[H])-[C:2](-[H])(-[H])-[C:3]-[H]
@@ -177,8 +216,10 @@ C	[C:1]>>[C:1]([H])([H])([H])([H])[H]	Texas Carbon
 OC	O[CH3:1]>>[CH4:1]
 OC	O[CH3:1]>>[*:1]
 OC	O[C:1]>>[C:1]-[H]
-CCCOC	O[C:1]>>[C:1]-[H]
-COCCC	O[C:1]>>[C:1]-[H]
+CCCOC	O[C:1]>>[C:1]-[H]	Remove unmapped?
+COCCC	O[C:1]>>[C:1]-[H]	Remove unmapped?
+CCCOC.Cl	O[C:1]>>[C:1]-[H]	Remove unmapped?
+COCCC.Cl	O[C:1]>>[C:1]-[H]	Remove unmapped?
 C	[C:1][H]>>O[C:1]
 C	[C:1][H]>>O[CH3:1]
 OC	O[C:1]>>[CH3:1]-[H]
@@ -205,19 +246,48 @@ CCC	[*:1]-[*:2]-[*:3]>>[a:1]:[a:2]:[a:3]
 
 # Adding Bonds
 C	[CH4:1]>>[CH3:1]c1ccccc1
+CC=CC=CC	[CH3:1][H].[CH3:2][H]>>[C:1][C:2]	
+CC=CC=CC	[CH3:1][H].[CH3:2][H]>>[C:1]-[C:2]	
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1][CH:2]
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]-[CH:2]
 CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]=[CH:2]
 CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]:[CH:2]
+CC=CC=CC	([CH3:1][H].[CH3:2][H])>>[C:1][C:2]	
+CC=CC=CC	([CH3:1][H].[CH3:2][H])>>[C:1]-[C:2]	
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1][CH:2]
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]-[CH:2]
 CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]=[CH:2]
 CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]:[CH:2]
-C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]-[CH:2]
-C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]-[CH:2]
-C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]~[cH:2]	No Bond type?
-C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1][cH:2]
-C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]:[cH:2]
-C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1]:[cH:2]
-C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
-C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
 
+# Query Bond on right?
+C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]~[CH:2]	Query bond?
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]@[CH:2]	Query bond?
+CC=CC=CC	[CH3:1].[CH3:2]>>[#6H:1]@[#6H:2]	Query bond?
+CC=CC=CC	[CH3:1].[CH3:2]>>[#6:1]@[#6:2]	Query bond?
+CC=CC=CC	[#6H3:1].[#6H3:2]>>[#6H:1]@[#6H:2]	Query bond?
+CC=CC=CC	[#6H3:1].[#6H3:2]>>[#6:1]@[#6:2]	Query bond?
+CC=CC=CC	[CH3:1].[CH3:2]>>[CH:1]!@[CH:2]	Query bond?
+C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]~[CH:2]	Query bond?
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]@[CH:2]	Query bond?
+CC=CC=CC	([CH3:1].[CH3:2])>>[#6H:1]@[#6H:2]	Query bond?
+CC=CC=CC	([CH3:1].[CH3:2])>>[#6:1]@[#6:2]	Query bond?
+CC=CC=CC	([#6H3:1].[#6H3:2])>>[#6H:1]@[#6H:2]	Query bond?
+CC=CC=CC	([#6H3:1].[#6H3:2])>>[#6:1]@[#6:2]	Query bond?
+CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]!@[CH:2]	Query bond?
+
+# Bond and aromaticity change
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1][cH:2]	Arom change?
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]:[cH:2]	Arom change?
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]~[cH:2]	Arom change? Query Bond?
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]@[cH:2]	Arom change? Query Bond?
+C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1][cH:2]	Arom change?
+C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1]:[cH:2]	Arom change?
+C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1]~[cH:2]	Arom change?
+C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1]@[cH:2]	Arom change?
+c1ccccc1	[cH:1]@[cH:2]>>[cH:1].[cH:2]	Break ring bonds?
+c1ccccc1	[cH:1]@[cH:2]>>[cH:1]!@[cH:2]	Error?
 
 # Input ordering (Exclusive/non-overlapping matches)
 C1CCC(N)C(N)C1	N[C:1][C:2]>>O[C:1][C:2]
@@ -237,12 +307,16 @@ NC1CCCCC1N	N[CH:1][CH2:2]>>O[CH0:1]=[CH:2]
 # Adding bond to existing atoms?
 CC	[*:1].[*:2]>>[*:1]-[*:2]
 CC	[*:1].[*:2]>>[*:1]=[*:2]
-CCC	[*:1].[*:2]>>[*:1]-[*:2]
+[C][C]	[*:1].[*:2]>>[*:1]=[*:2]
+CCC	[*:1].[*:2]>>[*:1]-[*:2]	Exclusive match applied before/after transform?
+[C][C][C]	[*:1].[*:2]>>[*:1]-[*:2]
 
 # For RDKit - wants the brackets to enforce self matches
 CC	([*:1].[*:2])>>[*:1]-[*:2]
 CC	([*:1].[*:2])>>[*:1]=[*:2]
+[C][C]	([*:1].[*:2])>>[*:1]=[*:2]
 CCC	([*:1].[*:2])>>[*:1]-[*:2]
+[C][C][C]	([*:1].[*:2])>>[*:1]-[*:2]
 
 C=C	[CH2:1].[CH2:2]>>[CH1:1]CCCC[CH1:2]	New bonds should be single
 C=C	[CH2:1].[CH2:2]>>[cH1:1]cccc[cH1:2]	New bonds should be aromatic
@@ -295,9 +369,14 @@ C/C=C\C	[C:1]/[C:2]=[C:3]\[C:4]>>[C:1]/[C:2]=[C:3]/[C:4] Invert DB
 C[C@](N)(O)CC	[C:1]O>>[C:1]Cl	Keep stereo intact
 C[C@H](N)O	[C:1]O>>[C:1]Cl	Keep stereo intact?
 C[C@H](N)O	[C:1](O)N>>[C:1](Cl)Br	Stereo should be lost
+C[C@H](N)O	[C:1]([O:2])[N:3]>>[C:1]([Cl:2])[Br:3]	Stereo should be kept?
+O[C@H](N)[C@H](N)O	[CHD3:1][CHD3:2]>>[C:1]Cl.[C:2]Cl	Stereo should be kept
+O[C@H](N)[C@H](N)O	[CHD3:1][CHD3:2]>>([C:1]Cl.[C:2]Cl)	Stereo should be kept
 C/C=C(/C)Br	[C:1]Br>>[C:1]Cl	Keep stereo intact
 C/C=C(/Br)C	[C:1]Br>>[C:1]Cl	Keep stereo intact
 C/C=C(/Cl)Br	[C:1](Br)Cl>>[C:1](N)O	Stereo should be lost
+C/C=C/C=C/C	[CHD2:1][CHD2:2]>>[C:1]O.[C:2]O	Stereo should be kept
+C/C=C/C=C/C	[CHD2:1][CHD2:2]>>([C:1]O.[C:2]O)	Stereo should be kept
 
 # Stereo (advanced)
 N[C@H](C)O	[*@:1]>>[*:1]
