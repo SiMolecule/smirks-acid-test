@@ -77,6 +77,19 @@ N	[C,N:1]>>[CH3,NH2:1]	Conflicting
 C	[C,N:1]>>[C,NH2:1]	Conflicting
 N	[C,N:1]>>[C,NH2:1]	Conflicting
 
+# Total vs Implicit Distinction?
+[H]C	[C:1]>>[CH0:1]
+[H]C	[C:1]>>[CH1:1]
+[H]C	[C:1]>>[CH2:1]
+[H]C	[C:1]>>[CH3:1]
+[H]C	[C:1]>>[CH4:1]
+[H]C	[C:1]>>[CH5:1]	Texas Carbon
+[H]C	[C:1]>>[Ch0:1]
+[H]C	[C:1]>>[Ch1:1]
+[H]C	[C:1]>>[Ch2:1]
+[H]C	[C:1]>>[Ch3:1]
+[H]C	[C:1]>>[Ch4:1]
+[H]C	[C:1]>>[Ch5:1]	Texas Carbon
 
 [O-]C	[O-:1]>>[OH1+0:1]
 [O-]C	[O-:1]>>[O:1]
@@ -122,8 +135,10 @@ C	[C:1]>>[13C:1]
 [13C]	[12,13;C:1]>>[0C:1]
 
 # Atom Change (element)
+[Pb]	[Pb]>>[Au]	Transmutation (Daylight)
 [Pb]	[Pb:1]>>[Au:1]	Transmutation
 [Pb]	[Pb,Au:1]>>[Au:1]	Transmutation
+[Au]	[Pb,Au:1]>>[Au:1]	Transmutation (no-op)
 C 	[C:1]>>[#6:1]
 C 	[C:1]>>[#7:1]	Transmutation
 C 	[C:1]>>[#0:1]	Create an explicit wild-card?
@@ -135,8 +150,8 @@ C(=O)N 	([O:2].[N:3])>>([O:3]).([N:2])	"Mayfield shuffle" error?
 # Atom Change (aromaticity)
 c1ccccc1	[c:1]>>[c:1]
 c1ccccc1	[c:1]>>[*:1]
-c1ccccc1	[c:1]>>[C:1]	Dubious
-C1CCCCC1	[C:1]>>[c:1]	Dubious
+c1ccccc1	[c:1]>>[C:1]	Dubious (make all carbons aliphatic)
+C1CCCCC1	[C:1]>>[c:1]	Dubious (make all carbons aromatic)
 c1ccccc1	[c:1][c:2][c:3]>>[CH:1]-[CH2:2]-[CH:3]
 c1ccccc1	[c:1][c:2][c:3]>>[CH1:1]-[CH2:2]-[CH1:3]
 c1ccccc1	[c:1][c:2][c:3]>>[C:1](-[H])-[C:2](-[H])(-[H])-[C:3]-[H]
@@ -196,8 +211,13 @@ CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]=[CH:2]
 CC=CC=CC	([CH3:1].[CH3:2])>>[CH:1]:[CH:2]
 C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]-[CH:2]
 C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]-[CH:2]
-C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]:[CH:2]
-C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]:[CH:2]
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]~[cH:2]	No Bond type?
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1][cH:2]
+C=CC=CC=C	[CH2:1].[CH2:2]>>[cH:1]:[cH:2]
+C=CC=CC=C	([CH2:1].[CH2:2])>>[cH:1]:[cH:2]
+C=CC=CC=C	[CH2:1].[CH2:2]>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
+C=CC=CC=C	([CH2:1].[CH2:2])>>[CH:1]:[CH:2]	Bond/Atom Aromaticity Conflict
+
 
 # Input ordering (Exclusive/non-overlapping matches)
 C1CCC(N)C(N)C1	N[C:1][C:2]>>O[C:1][C:2]
